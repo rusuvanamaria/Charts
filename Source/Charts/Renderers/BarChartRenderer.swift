@@ -460,33 +460,31 @@ open class BarChartRenderer: BarLineScatterCandleBubbleRenderer
                 // Set the color for the currently drawn value. If the index is out of bounds, reuse colors.
                 context.setFillColor(dataSet.color(atIndex: j).cgColor)
             }
-            
-            if topRectIndices.contains(j)
+
+            var radius: CGFloat = barRect.width * dataSet.roundRadiusWidthMultiplier
+            if radius > barRect.height, barRect.height > 0
             {
-                var radius: CGFloat = barRect.width * dataSet.roundRadiusWidthMultiplier
-                if radius > barRect.height, barRect.height > 0
-                {
-                    radius = barRect.height * 0.999
-                }
-                
-                let path = CGMutablePath()
-                path.move(to: CGPoint(x: barRect.minX, y: barRect.maxY))
-                path.addArc(tangent1End: CGPoint(x: barRect.minX, y: barRect.minY),
-                            tangent2End: CGPoint(x: barRect.maxX, y: barRect.minY),
-                            radius: radius)
-                path.addArc(tangent1End: CGPoint(x: barRect.maxX, y: barRect.minY),
-                            tangent2End: CGPoint(x: barRect.maxX, y: barRect.maxY),
-                            radius: radius)
-                path.addLine(to: CGPoint(x: barRect.maxX, y: barRect.maxY))
-                
-                context.addPath(path)
-                context.fillPath()
-            }
-            else {
-                context.fill(barRect)
+                radius = barRect.height * 0.999
             }
             
-            
+            let path = CGMutablePath()
+            path.move(to: CGPoint(x: barRect.minX, y: barRect.maxY))
+            path.addArc(tangent1End: CGPoint(x: barRect.minX, y: barRect.minY),
+                        tangent2End: CGPoint(x: barRect.maxX, y: barRect.minY),
+                        radius: radius)
+            path.addArc(tangent1End: CGPoint(x: barRect.maxX, y: barRect.minY),
+                        tangent2End: CGPoint(x: barRect.maxX, y: barRect.maxY),
+                        radius: radius)
+            path.addArc(tangent1End: CGPoint(x: barRect.maxX, y: barRect.maxY),
+                        tangent2End: CGPoint(x: barRect.minX, y: barRect.maxY),
+                        radius: radius)
+            path.addArc(tangent1End: CGPoint(x: barRect.minX, y: barRect.maxY),
+                        tangent2End: CGPoint(x: barRect.minX, y: barRect.minY),
+                        radius: radius)
+
+            context.addPath(path)
+            context.fillPath()
+
             if drawBorder
             {
                 context.setStrokeColor(borderColor.cgColor)
